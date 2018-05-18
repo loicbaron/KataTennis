@@ -21,6 +21,10 @@ setup(
         author_email='loic.baron@gmail.com',
         license='GPLv3',
         packages=['katatennis'],
+        include_package_data=True,
+        install_requires=[
+            'flask',
+        ],
         classifiers=[
             #   3 - Alpha
             #   4 - Beta

@@ -20,5 +20,3 @@ python3 setup.py install
 ```bash
 python3 -m pytest
 ```
-
-
