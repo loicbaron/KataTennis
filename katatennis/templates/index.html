@@ -1,9 +1,44 @@
 {% extends 'base.html' %}
 
-{% block header %}
-<h1>Welcome to Kata Tennis!</h1>
-{% endblock %}
-
 {% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+<h1>Welcome to Kata Tennis!</h1>
 <h3>Choose your player</h3>
+<br/>
+<div class="container">
+   <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 box-shadow">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Player 1</h4>
+          </div>
+          <div class="card-body">
+            <div class="col-12">
+            <img src="static/images/player1.png" height="200px">
+            </div>
+            <div class="col-12">
+            <input type="text" placeholder="name">
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 100px;"><h1>VS</h1></div>
+        <div class="card mb-4 box-shadow">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Player 2</h4>
+          </div>
+          <div class="card-body">
+            <div class="col-12">
+            <img src="static/images/player2.png" height="200px">
+            </div>
+            <div class="col-12">
+            <input type="text" placeholder="name">
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="row justify-content-md-center">
+    <div class="col-4">
+      <button type="button" class="btn btn-lg btn-block btn-outline-primary">Play</button>
+    </div>
+  </div>
+</div>
 {% endblock %}

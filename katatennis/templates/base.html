@@ -13,10 +13,9 @@
   <body>
     <div class="container-fluid">
         <section class="content">
-            <header>
-            {% block header %}{% endblock %}
-            </header>
+            {% include "header.html" %}
             {% block content %}{% endblock %}
+            {% include "footer.html" %}
         </section>
     </div>
 
