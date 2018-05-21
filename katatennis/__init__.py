@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import os
+import datetime
 from flask import Flask, jsonify, render_template, request
 from katatennis.db import db
 from katatennis.db.game import Game, GameSchema
 from marshmallow import ValidationError
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///db/database.db'
@@ -22,15 +23,38 @@ def home():
     return render_template('index.html')
 
 
+@app.route('/games/<int:pk>')
+def game(pk):
+    try:
+        game = Game.query.get(pk)
+    except IntegrityError:
+        return jsonify({"message": "Game could not be found."}), 400
+    game_result = game_schema.dump(game)
+    print(game_result)
+    return render_template('game.html', game=game_result.data)
+
+
 @app.route('/api/games', methods=['GET'])
 def get_games():
     games = Game.query.all()
     # Serialize the queryset
-    result = game_schema.dump(games)
+    result = []
+    for game in games:
+        result.append(game_schema.dump(game))
     return jsonify({'games': result})
 
 
-@app.route('/api/games', methods=['GET'])
+@app.route("/api/games/<int:pk>")
+def get_game(pk):
+    try:
+        game = Game.query.get(pk)
+    except IntegrityError:
+        return jsonify({"message": "Game could not be found."}), 400
+    game_result = game_schema.dump(game)
+    return jsonify({'game': game_result})
+
+
+@app.route('/api/games', methods=['POST'])
 def post_game():
     json_data = request.get_json()
     if not json_data:
@@ -38,6 +62,7 @@ def post_game():
     # Validate and deserialize input
     try:
         data = game_schema.load(json_data)
+        data = data.data
     except ValidationError as err:
         return jsonify(err.messages), 422
 
@@ -45,8 +70,7 @@ def post_game():
     game = Game(
         playerOne=data['playerOne'],
         playerTwo=data['playerTwo'],
-        author=author,
-        posted_at=datetime.datetime.utcnow()
+        created=datetime.datetime.utcnow()
     )
     db.session.add(game)
     db.session.commit()

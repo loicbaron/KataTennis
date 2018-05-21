@@ -2,45 +2,35 @@
 
 {% block content %}
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-<h1>Welcome to Kata Tennis!</h1>
-<h3>Choose your player</h3>
+    <h1>Game is on!</h1>
+    <div class="row justify-content-md-center">
+    <div class="alert alert-info col-4"><h3 id="score">{{ game.score }}</h3></div>
+    </div>
 <br/>
 <div class="container">
    <form id="gameInputForm">
    <div class="card-deck mb-3 text-center">
         <div class="card mb-4 box-shadow">
           <div class="card-header">
-            <h4 class="my-0 font-weight-normal">Player 1</h4>
+            <h4 class="my-0 font-weight-normal">{{ game.playerOne }}</h4>
           </div>
           <div class="card-body">
             <div class="col-12">
             <img src="/static/images/player1.png" height="200px">
-            </div>
-            <div class="col-12">
-            <input type="text" id="playerOne" placeholder="Enter your name..." required="required">
             </div>
           </div>
         </div>
         <div style="margin-top: 100px;"><h1>VS</h1></div>
         <div class="card mb-4 box-shadow">
           <div class="card-header">
-            <h4 class="my-0 font-weight-normal">Player 2</h4>
+            <h4 class="my-0 font-weight-normal">{{ game.playerTwo }}</h4>
           </div>
           <div class="card-body">
             <div class="col-12">
             <img src="/static/images/player2.png" height="200px">
             </div>
-            <div class="col-12">
-            <input type="text" id="playerTwo" placeholder="Enter your name..." required="required">
-          </div>
         </div>
       </div>
-  </div>
-
-  <div class="row justify-content-md-center">
-    <div class="col-4">
-      <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Play</button>
-    </div>
   </div>
   </form>
 </div>
