@@ -1,4 +1,6 @@
-pytest>=3.5.1
 flask>=1.0.2
 flask-sqlalchemy>=2.3.2
 marshmallow>=2.15.2
+pytest>=3.5.1
+pyzmq>=17.0.0
+sqlservice>=0.22.0

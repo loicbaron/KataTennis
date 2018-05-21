@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 
 import datetime
+import zmq
+
 from flask import Flask, jsonify, render_template, request
-from katatennis.db import db
-from katatennis.db.game import Game, GameSchema
+from katatennis.db.config import config
+from katatennis.db.game import Model, Game, GameSchema
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
+from sqlservice import SQLClient
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///db/database.db'
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db.init_app(app)
+db = SQLClient(config, model_class=Model)
+
 with app.test_request_context():
     db.create_all()
 
 game_schema = GameSchema()
-
 
 @app.route('/')
 def home():
@@ -26,7 +27,7 @@ def home():
 @app.route('/games/<int:pk>')
 def game(pk):
     try:
-        game = Game.query.get(pk)
+        game = db.Game.get(pk)
     except IntegrityError:
         return jsonify({"message": "Game could not be found."}), 400
     game_result = game_schema.dump(game)
@@ -36,7 +37,7 @@ def game(pk):
 
 @app.route('/api/games', methods=['GET'])
 def get_games():
-    games = Game.query.all()
+    games = db.Game.all()
     # Serialize the queryset
     result = []
     for game in games:
@@ -47,7 +48,7 @@ def get_games():
 @app.route("/api/games/<int:pk>")
 def get_game(pk):
     try:
-        game = Game.query.get(pk)
+        game = db.Game.get(pk)
     except IntegrityError:
         return jsonify({"message": "Game could not be found."}), 400
     game_result = game_schema.dump(game)
@@ -72,8 +73,30 @@ def post_game():
         playerTwo=data['playerTwo'],
         created=datetime.datetime.utcnow()
     )
-    db.session.add(game)
-    db.session.commit()
-    result = game_schema.dump(Game.query.get(game.id))
+    db.save(game)
+
+    result = game_schema.dump(db.Game.get(game.id))
+
+    process_game(result.data)
+
     return jsonify({"message": "Created new game.",
                     "game": result})
+
+
+def process_game(game):
+
+    # ZeroMQ Context
+    context = zmq.Context()
+
+    # Define the socket using the "Context"
+    sock = context.socket(zmq.REQ)
+    sock.setsockopt(zmq.LINGER, 0)
+    sock.connect("tcp://127.0.0.1:6002")
+
+    # Send a "message" using the socket
+    sock.send_json(game)
+    message = sock.recv_json()
+    print(message)
+    # these are not necessary, but still good practice:
+    sock.close()
+    context.term()

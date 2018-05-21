@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from katatennis.game import Game
+from katatennis import Game
 
 
 game = Game("Mario", "Luigi")

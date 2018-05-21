@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
-from katatennis.db import db
 from katatennis.db.util import must_not_be_blank
 from marshmallow import Schema, fields
 
-class Game(db.Model):
+from sqlalchemy import Column, ForeignKey, orm, types
+
+from sqlservice import declarative_base, event
+
+
+Model = declarative_base()
+
+class Game(Model):
     """
     This class instantiates a Tennis Game
     """
     __tablename__ = 'games'
-    id = db.Column(db.Integer, primary_key=True)
-    playerOne = db.Column(db.String(255))
-    playerTwo = db.Column(db.String(255))
-    scoreOne = db.Column(db.Integer, default=0)
-    scoreTwo = db.Column(db.Integer, default=0)
-    created = db.Column(db.DateTime)
+    id = Column(types.Integer, primary_key=True)
+    playerOne = Column(types.String(255))
+    playerTwo = Column(types.String(255))
+    scoreOne = Column(types.Integer, default=0)
+    scoreTwo = Column(types.Integer, default=0)
+    created = Column(types.DateTime)
 
     #def __init__(self, player_one, player_two, score_one=0, score_two=0):
     #

@@ -23,7 +23,10 @@ python3 -m pytest
 
 ## run app
 ```bash
-export FLASK_APP=katatennis 
-export FLASK_ENV=development
-flask run
+# backend simulating the games
+./katatennis/services/server.py &
+
+# web server
+./run.py
+
 ```
