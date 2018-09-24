@@ -76,27 +76,30 @@ def post_game():
     db.save(game)
 
     result = game_schema.dump(db.Game.get(game.id))
-
+    print("calling process_game")
     process_game(result.data)
 
     return jsonify({"message": "Created new game.",
                     "game": result})
 
 
+HOST = '127.0.0.1'
+PORT = '6002'
+_context = zmq.Context()
+_publisher = _context.socket(zmq.REQ)
+url = 'tcp://{}:{}'.format(HOST, PORT)
+
 def process_game(game):
 
-    # ZeroMQ Context
-    context = zmq.Context()
-
-    # Define the socket using the "Context"
-    sock = context.socket(zmq.REQ)
-    sock.setsockopt(zmq.LINGER, 0)
-    sock.connect("tcp://127.0.0.1:6002")
-
-    # Send a "message" using the socket
-    sock.send_json(game)
-    message = sock.recv_json()
-    print(message)
-    # these are not necessary, but still good practice:
-    sock.close()
-    context.term()
+    try:
+        print("Binding ZMQ on {}".format(url))
+        _publisher.connect(url)
+        _publisher.send_json(game)
+        print("Sent data")
+        message = _publisher.recv_json()
+        print("message: {}".format(message))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+    finally:
+        _publisher.unbind(url)
