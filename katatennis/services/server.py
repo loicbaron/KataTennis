@@ -35,10 +35,11 @@ if __name__ == '__main__':
         t.start()
 
     try:
+        print("Binding ZMQ")
         context = zmq.Context()
         sock = context.socket(zmq.REP)
-        sock.bind('tcp://0.0.0.0:6002')
-
+        sock.bind('tcp://127.0.0.1:6002')
+        print("Listening to ZMQ")
         while True:
             message = sock.recv_json()
             print("got the message = {}".format(message))
